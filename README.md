@@ -19,12 +19,14 @@ var dispatcher = new Dispatcher();
 Defining custom routes in the constructor
 ```javascript
 var dispatcher = new Dispatcher({
-	/somecool/route/: function() {
+	"/somecool/route/": function() {
 		//do stuff here
 	},
-	/another/route/: myClass.someMethod
+	"/another/route/": myClass.someMethod
 });
 ```
+By default, the dispatcher will try to parse the url into controller and action, much like CakePhp does.
+If the url is "/users/view/" then if there is no custom route defined, it will instantiate a new user and call the view method on the user class.
 
 You can also add routes later by calling the route method
 ```javascript

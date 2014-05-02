@@ -21,10 +21,14 @@ var Dispatcher = Class.extend({
 
     _routes: {},
     _required: {},
-    init: function(routes) {
+    init: function(routes, requires) {
+
         if (routes) this._routes = routes;
+        if (requires) this._required = requies;
+
+        var $this = this;
         $(document).on('pjax:end', function(e, xhr, options) {
-            this._handleRoute(options.url);
+            $this._handleRoute(options.url);
         });
         //call the function on init for initial page load.
         this._handleRoute(window.location);
@@ -44,19 +48,20 @@ var Dispatcher = Class.extend({
         return l;
     },
     _handleRoute: function(url) {
-        var l = this.getLocation(url);
+        var $this = this;
+        var l = $this.getLocation(url);
 
-        if (this._routes.hasOwnProperty(l.pathname)) {
-            //if this exact route is already set.
-            if (this._required.hasOwnProperty(l.pathname)) {
-                toast(this._required[l.pathname][0], function() {
-                    if (this._required[l.pathname][1]) {
-                        this._required[l.pathname][1]();
+        if ($this._routes.hasOwnProperty(l.pathname)) {
+            //if $this exact route is already set.
+            if ($this._required.hasOwnProperty(l.pathname)) {
+                toast($this._required[l.pathname][0], function() {
+                    if ($this._required[l.pathname][1]) {
+                        $this._required[l.pathname][1]();
                     }
-                    this._routes[l.pathname]();
+                    $this._routes[l.pathname]();
                 })
             } else {
-                this._routes[l.pathname]();
+                $this._routes[l.pathname]();
             }
 
         } else {
@@ -84,16 +89,16 @@ var Dispatcher = Class.extend({
                 }
             }
             //check if our route definitions has a method for this path.
-            if (this._routes.hasOwnProperty(path)) {
-                if (this._required.hasOwnProperty(path)) {
-                    toast(this._required[path][0], function() {
-                        if (this._required[path][1]) {
-                            this._required[path][1]();
+            if ($this._routes.hasOwnProperty(path)) {
+                if ($this._required.hasOwnProperty(path)) {
+                    toast($this._required[path][0], function() {
+                        if ($this._required[path][1]) {
+                            $this._required[path][1]();
                         }
-                        this._routes[path]();
+                        $this._routes[path]();
                     })
                 } else {
-                    this._routes[path]();
+                    $this._routes[path]();
                 }
             } else {
                 //see if we can find an object and method based on the parsed url
