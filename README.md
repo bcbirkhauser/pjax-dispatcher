@@ -16,13 +16,14 @@ The very basic way to implement
 var dispatcher = new Dispatcher();
 ```
 
-Defining custom routes in the constructor
+Defining custom routes in the constructor. *Note, all routes should begin and end in "/" unless using a wildcard "*"
 ```javascript
 var dispatcher = new Dispatcher({
 	"/somecool/route/": function() {
 		//do stuff here
 	},
-	"/another/route/": myClass.someMethod
+	"/another/route/": myClass.someMethod,
+	"/news/*": newsModule.go
 });
 ```
 By default, the dispatcher will try to parse the url into controller and action, much like CakePhp does.

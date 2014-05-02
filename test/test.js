@@ -16,8 +16,8 @@ var testClass = Class.extend({
 });
 
 var dispatcher = new Dispatcher({
-    '/#awesomesauce': testModule.runeMe,
-    '/#supercool': function() {
+    '/awesomesauce': testModule.runeMe,
+    '/supercool': function() {
         var c = new testClass();
         c.superCool();
     }

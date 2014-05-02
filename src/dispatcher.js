@@ -17,8 +17,6 @@
 
 "use strict";
 var Dispatcher = Class.extend({
-
-
     _routes: {},
     _required: {},
     init: function(routes, requires) {
@@ -53,16 +51,7 @@ var Dispatcher = Class.extend({
 
         if ($this._routes.hasOwnProperty(l.pathname)) {
             //if $this exact route is already set.
-            if ($this._required.hasOwnProperty(l.pathname)) {
-                toast($this._required[l.pathname][0], function() {
-                    if ($this._required[l.pathname][1]) {
-                        $this._required[l.pathname][1]();
-                    }
-                    $this._routes[l.pathname]();
-                })
-            } else {
-                $this._routes[l.pathname]();
-            }
+            this._dispatchPath(l.pathname);
 
         } else {
             var urlparts;
@@ -78,37 +67,45 @@ var Dispatcher = Class.extend({
                     path = '/' + urlparts[0] + '/';
                     controller = window[urlparts[0]];
                 }
+                if (urlparts.length >= 2 && urlparts[2] !== "") {
+                    path = '/' + urlparts[1] + '/' + urlparts[2] + '/';
+                    action = urlparts[2];
+                }
             } else {
                 path = '/';
             }
 
-            if (urlparts.length >= 2) {
-                if (urlparts[2] !== "") {
-                    path = '/' + urlparts[1] + '/' + urlparts[2] + '/';
-                    action = urlparts[2];
-                }
-            }
+
             //check if our route definitions has a method for this path.
             if ($this._routes.hasOwnProperty(path)) {
-                if ($this._required.hasOwnProperty(path)) {
-                    toast($this._required[path][0], function() {
-                        if ($this._required[path][1]) {
-                            $this._required[path][1]();
-                        }
-                        $this._routes[path]();
-                    })
-                } else {
-                    $this._routes[path]();
-                }
+                this._dispatchPath(path);
             } else {
-                //see if we can find an object and method based on the parsed url
-                if (controller && typeof controller != "undefined") {
-                    var c = new controller;
-                    if (action) {
-                        c[action]();
+                //check if we have a wildcard route defined
+                path = '/' + urlparts[1] + '/*';
+                if ($this._routes.hasOwnProperty(path)) {
+                    this._dispatchPath(path);
+                } else {
+                    //see if we can find an object and method based on the parsed url
+                    if (controller && typeof controller != "undefined") {
+                        var c = new controller;
+                        if (action) {
+                            c[action]();
+                        }
                     }
                 }
             }
         }
     },
+    _dispatchPath: function(path) {
+        if ($this._required.hasOwnProperty(path)) {
+            toast($this._required[path][0], function() {
+                if ($this._required[path][1]) {
+                    $this._required[path][1]();
+                }
+                $this._routes[path]();
+            })
+        } else {
+            $this._routes[path]();
+        }
+    }
 });
