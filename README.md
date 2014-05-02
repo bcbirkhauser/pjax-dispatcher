@@ -34,7 +34,25 @@ var dispatcher = new Dispatcher();
 dispatcher.route('/newroute/', myClass, myMethod);
 ```
 
-If you need to load any javascript or css before your functions are called, use the before function.  This function takes three arguments: the route, an array of files to load in the toast style, and an optional callback function.
+If you need to load any javascript or css before your functions are called, you can use the before function or define them in the constructor.
+
+To define the required files in the constructor, append an object as the second argument.  The required files object should have the url as the key and an array for the value.  The first element in the array should be the css and js to load, as an array following the toast documentation, the second is an optional callback.
+```javascript
+var dispatcher = new Dispatcher(
+	{
+		"/somecool/route/": function() {
+			//do stuff here
+		},
+		"/another/route/": myClass.someMethod
+	},
+	{
+		"/somecool/route/": [ ["somefile.js", "somefile.css"], myCallback],
+		"/another/route/": [ ["myclass.js"]]
+	}
+);
+```
+
+The before function takes three arguments: the route, an array of files to load in the toast style, and an optional callback function.
 
 ```javascript
 var dispatcher = new Dispatcher();
