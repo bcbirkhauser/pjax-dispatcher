@@ -37,14 +37,17 @@ dispatcher.route('/newroute/', myClass, myMethod);
 
 If you need to load any javascript or css before your functions are called, you can use the before function or define them in the constructor.
 
-To define the required files in the constructor, append an object as the second argument.  The required files object should have the url as the key and an array for the value.  The first element in the array should be the css and js to load, as an array following the toast documentation, the second is an optional callback.
+To define the required files in the constructor, append an object as the second argument.  The required files object should have the url as the key and an array for the value.  The first element in the array should be the css and js to load, as an array following the toast documentation, the second is an optional callback. Since you cannot reference an object that does not exist, you can change the way you set up the route for a class that is yet to be loaded.
 ```javascript
 var dispatcher = new Dispatcher(
 	{
 		"/somecool/route/": function() {
 			//do stuff here
 		},
-		"/another/route/": myClass.someMethod
+		"/another/route/": {
+	        controller: "myClass",
+	        action: "someMethod"
+	    }
 	},
 	{
 		"/somecool/route/": [ ["somefile.js", "somefile.css"], myCallback],

@@ -22,7 +22,7 @@ var Dispatcher = Class.extend({
     init: function(routes, requires) {
 
         if (routes) this._routes = routes;
-        if (requires) this._required = requies;
+        if (requires) this._required = requires;
 
         var $this = this;
         $(document).on('pjax:end', function(e, xhr, options) {
@@ -44,6 +44,10 @@ var Dispatcher = Class.extend({
         var l = document.createElement("a");
         l.href = href;
         return l;
+    },
+    isFunction: function(functionToCheck) {
+        var getType = {};
+        return functionToCheck && getType.toString.call(functionToCheck) === '[object Function]';
     },
     _handleRoute: function(url) {
         var $this = this;
@@ -97,15 +101,39 @@ var Dispatcher = Class.extend({
         }
     },
     _dispatchPath: function(path) {
+        var $this = this;
+        var controller;
+        var c;
         if ($this._required.hasOwnProperty(path)) {
             toast($this._required[path][0], function() {
                 if ($this._required[path][1]) {
                     $this._required[path][1]();
                 }
-                $this._routes[path]();
+                if ($this.isFunction($this._routes[path])) {
+                    $this._routes[path]();
+                } else if ($this._routes[path].controller != "undefined") {
+                    controller = window[$this._routes[path].controller];
+                    if (controller && typeof controller != "undefined") {
+                        c = new controller;
+                        if ($this._routes[path].action != "undefined") {
+                            c[$this._routes[path].action]();
+                        }
+                    }
+                }
+
             })
         } else {
-            $this._routes[path]();
+            if ($this.isFunction($this._routes[path])) {
+                $this._routes[path]();
+            } else if ($this._routes[path].controller != "undefined") {
+                controller = window[$this._routes[path].controller];
+                if (controller && typeof controller != "undefined") {
+                    c = new controller;
+                    if ($this._routes[path].action != "undefined") {
+                        c[$this._routes[path].action]();
+                    }
+                }
+            }
         }
     }
 });
