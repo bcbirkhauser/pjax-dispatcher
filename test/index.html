@@ -1,0 +1,18 @@
+<html>
+	<head>
+		<title>Testing dispatcher</title>
+		<script src="../vendor/jquery.js" type="text/javascript"></script>
+		<script src="../vendor/class.js" type="text/javascript"></script>
+		<script src="../vendor/jquery.pjax.js" type="text/javascript"></script>
+		<script src="../vendor/toast.1.0.0.min.js" type="text/javascript"></script>
+		<script src="../src/dispatcher.js" type="text/javascript"></script>
+		<script src="test.js" type="text/javascript"></script>
+	</head>
+	<body>
+		<h1>This is the best test ever!</h1>
+		<p><a href="#awesomesauce" data-pjax="true">Test simple object</a></p>
+		<p><a href="#supercool" data-pjax="true">Test class method</a></p>
+		<p><a href="/testClass" data-pjax="true">Test class init directly from url</a></p>
+		<div id="contentContainer"></div>
+	</body>
+</html>
