@@ -22,6 +22,7 @@ var dispatcher = new Dispatcher({
         c.superCool();
     }
 });
+dispatcher.before('/awesomesauce', ['test.css', 'test2.js']);
 
 $(function() {
     $('a[data-pjax]').unbind('click').bind('click', function(e) {

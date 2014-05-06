@@ -104,25 +104,30 @@ var Dispatcher = Class.extend({
         var $this = this;
         var controller;
         var c;
+
         if ($this._required.hasOwnProperty(path)) {
-            toast($this._required[path][0], function() {
-                if ($this._required[path][1]) {
-                    $this._required[path][1]();
-                }
-                if ($this.isFunction($this._routes[path])) {
-                    $this._routes[path]();
-                } else if ($this._routes[path].controller != "undefined") {
-                    controller = window[$this._routes[path].controller];
-                    if (controller && typeof controller != "undefined") {
-                        c = new controller;
-                        if ($this._routes[path].action != "undefined") {
-                            c[$this._routes[path].action]();
+            $this._required[path][0].push(
+                function() {
+                    if ($this._required[path][1]) {
+                        $this._required[path][1]();
+                    }
+                    if ($this.isFunction($this._routes[path])) {
+                        $this._routes[path]();
+                    } else if ($this._routes[path].controller != "undefined") {
+                        controller = window[$this._routes[path].controller];
+                        if (controller && typeof controller != "undefined") {
+                            c = new controller;
+                            if ($this._routes[path].action != "undefined") {
+                                c[$this._routes[path].action]();
+                            }
                         }
                     }
-                }
 
-            })
+                }
+            );
+            toast.apply(null, $this._required[path][0]);
         } else {
+
             if ($this.isFunction($this._routes[path])) {
                 $this._routes[path]();
             } else if ($this._routes[path].controller != "undefined") {
