@@ -5,7 +5,7 @@ A way to automatically call classes or functions on pjax page changes.
 
 I needed a way to load javascript and css classes and call different classes and methods when the url changed, so I wrote this class to do just that. I wanted to have the flexibility to define custom routes or let the dispatcher figure out which class and method to call based on the url. It's modeled after how CakePhp handles it's routes, so it uses controller(class) and action(method).
 
-It requires [jquery](https://github.com/jquery/jquery), [jquery-pjax](https://github.com/defunkt/jquery-pjax) and [toast](https://github.com/pyrsmk/toast) and John Resig's [class script](http://ejohn.org/blog/simple-javascript-inheritance/)
+It requires [jquery](https://github.com/jquery/jquery), [jquery-pjax](https://github.com/defunkt/jquery-pjax) and John Resig's [class script](http://ejohn.org/blog/simple-javascript-inheritance/)
 
 
 ##How To Use

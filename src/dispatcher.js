@@ -144,7 +144,6 @@ var Dispatcher = Class.extend({
         if (required.css.length) {
 
             this.loadStyleSheet(required.css.shift(), function() {
-                console.debug('loaded stylesheet');
                 if (!required.css.length) {
                     $this._loadRequiredFiles(required, callback);
                 }
@@ -153,7 +152,8 @@ var Dispatcher = Class.extend({
         } else {
 
             if (required.js.length) {
-                toast(required.js.shift(), function() {
+
+                this.loadJavascript(required.js.shift(), function() {
                     if (!required.js.length) {
                         $this._loadRequiredFiles(required, callback);
                     } else {
@@ -201,5 +201,19 @@ var Dispatcher = Class.extend({
         head.appendChild(link); // insert the link node into the DOM and start loading the style sheet
 
         return link; // return the link node;
+    },
+    loadJavascript: function(src, callback) {
+        var script = document.createElement('script'),
+            loaded;
+        script.setAttribute('src', src);
+        if (callback) {
+            script.onreadystatechange = script.onload = function() {
+                if (!loaded) {
+                    callback();
+                }
+                loaded = true;
+            };
+        }
+        document.getElementsByTagName('head')[0].appendChild(script);
     }
 });
