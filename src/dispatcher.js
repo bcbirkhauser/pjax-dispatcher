@@ -15,7 +15,7 @@
  *  };
  */
 
-"use strict";
+
 var Dispatcher = Class.extend({
     _routes: {},
     _required: {},
@@ -33,12 +33,12 @@ var Dispatcher = Class.extend({
     },
     route: function(path, controller, action) {
         this._routes[path] = function() {
-            var c = new controller;
+            var c = new controller();
             controller[action]();
-        }
+        };
     },
-    before: function(path, required, callback) {
-        this._required[path] = [required, callback];
+    before: function(path, opts) {
+        this._required[path] = opts;
     },
     getLocation: function(href) {
         var l = document.createElement("a");
@@ -91,7 +91,7 @@ var Dispatcher = Class.extend({
                 } else {
                     //see if we can find an object and method based on the parsed url
                     if (controller && typeof controller != "undefined") {
-                        var c = new controller;
+                        var c = new controller();
                         if (action) {
                             c[action]();
                         }
@@ -106,26 +106,24 @@ var Dispatcher = Class.extend({
         var c;
 
         if ($this._required.hasOwnProperty(path)) {
-            $this._required[path][0].push(
-                function() {
-                    if ($this._required[path][1]) {
-                        $this._required[path][1]();
-                    }
-                    if ($this.isFunction($this._routes[path])) {
-                        $this._routes[path]();
-                    } else if ($this._routes[path].controller != "undefined") {
-                        controller = window[$this._routes[path].controller];
-                        if (controller && typeof controller != "undefined") {
-                            c = new controller;
-                            if ($this._routes[path].action != "undefined") {
-                                c[$this._routes[path].action]();
-                            }
+            var assetsLoaded = function() {
+                if ($this.isFunction($this._routes[path])) {
+                    $this._routes[path]();
+                } else if ($this._routes[path].controller != "undefined") {
+                    controller = window[$this._routes[path].controller];
+                    if (controller && typeof controller != "undefined") {
+                        c = new controller();
+                        if ($this._routes[path].action != "undefined") {
+                            c[$this._routes[path].action]();
                         }
                     }
-
                 }
-            );
-            toast.apply(null, $this._required[path][0]);
+
+            };
+            this._loadRequiredFiles($this._required[path], assetsLoaded);
+
+
+
         } else {
 
             if ($this.isFunction($this._routes[path])) {
@@ -133,12 +131,75 @@ var Dispatcher = Class.extend({
             } else if ($this._routes[path].controller != "undefined") {
                 controller = window[$this._routes[path].controller];
                 if (controller && typeof controller != "undefined") {
-                    c = new controller;
+                    c = new controller();
                     if ($this._routes[path].action != "undefined") {
                         c[$this._routes[path].action]();
                     }
                 }
             }
         }
+    },
+    _loadRequiredFiles: function(required, callback) {
+        var $this = this;
+        if (required.css.length) {
+
+            this.loadStyleSheet(required.css.shift(), function() {
+                console.debug('loaded stylesheet');
+                if (!required.css.length) {
+                    $this._loadRequiredFiles(required, callback);
+                }
+            });
+
+        } else {
+
+            if (required.js.length) {
+                toast(required.js.shift(), function() {
+                    if (!required.js.length) {
+                        $this._loadRequiredFiles(required, callback);
+                    } else {
+                        callback();
+                    }
+                });
+            } else {
+                callback();
+            }
+        }
+    },
+    loadStyleSheet: function(path, fn, scope) {
+        var head = document.getElementsByTagName('head')[0], // reference to document.head for appending/ removing link nodes
+            link = document.createElement('link'); // create the link node
+        link.setAttribute('href', path);
+        link.setAttribute('rel', 'stylesheet');
+        link.setAttribute('type', 'text/css');
+
+        var sheet, cssRules;
+        // get the correct properties to check for depending on the browser
+        if ('sheet' in link) {
+            sheet = 'sheet';
+            cssRules = 'cssRules';
+        } else {
+            sheet = 'styleSheet';
+            cssRules = 'rules';
+        }
+
+        var interval_id = setInterval(function() { // start checking whether the style sheet has successfully loaded
+            try {
+                if (link[sheet] && link[sheet][cssRules].length) { // SUCCESS! our style sheet has loaded
+                    clearInterval(interval_id); // clear the counters
+                    clearTimeout(timeout_id);
+                    fn.call(scope || window, true, link); // fire the callback with success == true
+                }
+            } catch (e) {} finally {}
+        }, 10), // how often to check if the stylesheet is loaded
+            timeout_id = setTimeout(function() { // start counting down till fail
+                clearInterval(interval_id); // clear the counters
+                clearTimeout(timeout_id);
+                head.removeChild(link); // since the style sheet didn't load, remove the link node from the DOM
+                fn.call(scope || window, false, link); // fire the callback with success == false
+            }, 15000); // how long to wait before failing
+
+        head.appendChild(link); // insert the link node into the DOM and start loading the style sheet
+
+        return link; // return the link node;
     }
 });

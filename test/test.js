@@ -16,13 +16,13 @@ var testClass = Class.extend({
 });
 
 var dispatcher = new Dispatcher({
-    '/awesomesauce': testModule.runeMe,
+    '/index.html': testModule.runeMe,
     '/supercool': function() {
         var c = new testClass();
         c.superCool();
     }
 });
-dispatcher.before('/awesomesauce', ['test.css', 'test2.js']);
+dispatcher.before('/index.html', ['test.css', 'test2.js']);
 
 $(function() {
     $('a[data-pjax]').unbind('click').bind('click', function(e) {
@@ -31,4 +31,4 @@ $(function() {
             timeout: 7000
         });
     });
-})
+});
