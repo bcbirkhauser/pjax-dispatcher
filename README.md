@@ -5,7 +5,7 @@ A way to automatically call classes or functions on pjax page changes.
 
 I needed a way to load javascript and css classes and call different classes and methods when the url changed, so I wrote this class to do just that. I wanted to have the flexibility to define custom routes or let the dispatcher figure out which class and method to call based on the url. It's modeled after how CakePhp handles it's routes, so it uses controller(class) and action(method).
 
-It requires [jquery](https://github.com/jquery/jquery), [jquery-pjax](https://github.com/defunkt/jquery-pjax) and [toast](https://github.com/pyrsmk/toast) and John Resig's [class script](http://ejohn.org/blog/simple-javascript-inheritance/)
+It requires [jquery](https://github.com/jquery/jquery), [jquery-pjax](https://github.com/defunkt/jquery-pjax) and John Resig's [class script](http://ejohn.org/blog/simple-javascript-inheritance/)
 
 
 ##How To Use
@@ -35,9 +35,9 @@ var dispatcher = new Dispatcher();
 dispatcher.route('/newroute/', myClass, myMethod);
 ```
 
-If you need to load any javascript or css before your functions are called, you can use the before function or define them in the constructor.
+If you need to load any javascript or css before your functions are called, you can use the before function or define them in the constructor. It will load all css first, then load all js synchrously.
 
-To define the required files in the constructor, append an object as the second argument.  The required files object should have the url as the key and an array for the value.  The first element in the array should be the css and js to load, as an array following the toast documentation, the second is an optional callback. Since you cannot reference an object that does not exist, you can change the way you set up the route for a class that is yet to be loaded.
+To define the required files in the constructor, append an object as the second argument.  The required files object should have the url as the key and an array for the value.  The first element in the array should be the css and js to load, as an object. Since you cannot reference an object that does not exist, you can change the way you set up the route for a class that is yet to be loaded.
 ```javascript
 var dispatcher = new Dispatcher(
 	{
@@ -50,8 +50,13 @@ var dispatcher = new Dispatcher(
 	    }
 	},
 	{
-		"/somecool/route/": [ ["somefile.js", "somefile.css"], myCallback],
-		"/another/route/": [ ["myclass.js"]]
+		"/somecool/route/": {
+	        css: ['/coolstyles.css'],
+	        js: ['/morescripts.js']
+	    },
+		"/another/route/": {
+	        js: ['/myclass.js']
+	    }
 	}
 );
 ```
@@ -60,5 +65,5 @@ The before function takes three arguments: the route, an array of files to load 
 
 ```javascript
 var dispatcher = new Dispatcher();
-dispatcher.before('/loadbefore/route/', ['myclass.js', 'mycustom.css']);
+dispatcher.before('/loadbefore/route/', {js:['myclass.js'], css:['mycustom.css']});
 ```
